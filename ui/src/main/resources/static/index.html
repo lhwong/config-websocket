@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<title>Hello AngularJS</title>
+<link
+	href="css/angular-bootstrap.css"
+	rel="stylesheet">
+<style type="text/css">
+[ng\:cloak], [ng-cloak], .ng-cloak {
+	display: none !important;
+}
+</style>
+</head>
+
+<body ng-app="hello" ng-cloak class="ng-cloak">
+	<div ng-controller="navigation as nav" class="container">
+		<ul class="nav nav-pills" role="tablist">
+			<li ng-class="{active:nav.tab('home')}"><a href="#/">home</a></li>
+			<li ng-class="{active:nav.tab('navigation')}"><a href="login">login</a></li>
+			<li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
+		</ul>
+	</div>
+	<div ng-view class="container"></div>
+	<script src="js/angular-bootstrap.js" type="text/javascript"></script>
+	<script src="js/hello.js"></script>
+	<script src="js/sockjs-0.3.4.min.js"></script>
+    <script src="js/stomp.min.js"></script>
+    
+    
+
+    <!-- Javascript functions -->
+    <script>
+      /**
+       * Open the web socket connection and subscribe the "/notify" channel.
+       */
+      function connect() {
+        // Create and init the SockJS object
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+        // Subscribe the '/notify' channell
+        stompClient.connect({}, function(frame) {
+          stompClient.subscribe('/topic/notify.230', function(notification) {
+            // Call the notify function when receive a notification
+            //notify(JSON.parse(notification.body).content);
+        	  notify(notification.body);
+          });
+        });
+        
+        return;
+      } // function connect
+      
+      /**
+       * Display the notification message.
+       */
+      function notify(message) {
+        $("#notifications-area").append(message + "\n");
+        return;
+      }
+      
+      /**
+       * Init operations.
+       */
+      $(document).ready(function() {
+        
+        // Start the web socket connection.
+        
+        connect();
+        
+      });
+      </script>
+</body>
+</html>
